@@ -17,7 +17,6 @@ public class Enrollment
     public virtual Course Course { get; set; }
     
     [Required]
-    public Boolean isActive { get; set; }
-
+    public bool IsActive { get; set; }
     public DateTime EnrollmentDate { get; set; }
 }

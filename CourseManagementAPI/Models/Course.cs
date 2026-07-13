@@ -6,7 +6,7 @@ public class Course
 {
     [Key]
     [Required]
-    public Guid CourseID { get; set; }
+    public Guid CourseId { get; set; }
 
     [MaxLength(100, ErrorMessage = "O título não deve ultrapassar 100 caracteres") ]
     [Required]
@@ -25,7 +25,7 @@ public class Course
     [Required]
     public DateTime CreatedAt { get; set; }
 
-    public Boolean isActive { get; set; }
+    public bool IsActive { get; set; }
 
     public virtual ICollection<Enrollment> Enrollments { get; set; }
     public virtual ICollection<Student> Students { get; set; }
