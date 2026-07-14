@@ -1,5 +1,4 @@
 using CourseManagementAPI.Data;
-using CourseManagementAPI.Model;
 using CourseManagementAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -32,10 +31,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddIdentity<ApplicationUser, AccessRole>(opts => {
     opts.User.RequireUniqueEmail = true;
     opts.Password.RequiredLength = 8;
-    }
-
-
-    ).AddEntityFrameworkStores<CourseDbContext>();
+    })
+        .AddEntityFrameworkStores<CourseDbContext>()
+        .AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
