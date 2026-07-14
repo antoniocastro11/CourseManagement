@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-namespace CourseManagementAPI.Model;
+namespace CourseManagementAPI.Models;
 
 public class ApplicationUser : IdentityUser<Guid>
 {
