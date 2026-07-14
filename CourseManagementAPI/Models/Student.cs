@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CourseManagementAPI.Model;
+namespace CourseManagementAPI.Models;
 public class Student
-    // reforçar: preciso entender como cria as roles
 {
     [Key]
     public Guid UserId {get; set;}

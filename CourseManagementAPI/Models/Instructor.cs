@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using CourseManagementAPI.Model;
+using CourseManagementAPI.Models;
 
 namespace CourseManagementAPI.Model;
 
@@ -13,6 +13,7 @@ public class Instructor
     [MaxLength(70, ErrorMessage = "O nome não deve ultrapassar 70 caracteres")]
     public string FullName { get; set;}
 
-    
+    [Required]
+    public string Subject { get; set;}
 
 }
