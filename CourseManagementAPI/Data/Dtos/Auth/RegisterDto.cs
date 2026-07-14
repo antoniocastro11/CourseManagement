@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CourseManagementAPI.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace CourseManagementAPI.Data.Dtos.Auth;
 
@@ -14,7 +15,6 @@ public class RegisterDto
     [Required]
     public string Password { get; set; }
 
-  //  [Required]
-    //public UserRole Role { get; set; }
-    //deixar string ou definir enum?
+    [Required]
+    public UserRole Role { get; set; }
 }

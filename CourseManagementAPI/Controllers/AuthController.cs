@@ -1,25 +1,25 @@
-﻿using CourseManagementAPI.Data.Dtos;
+﻿using CourseManagementAPI.Data.Dtos.Auth;
 using CourseManagementAPI.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseManagementAPI.Controllers;
 
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController(AuthService authService) : ControllerBase
 {
     [Authorize(Roles = "Admin")]
-    [HttpPost]
-    //pensasr qual vai ser esse metodo aqui, pq tem que ver do cadastro de outros tipos de usuário
-    public async Task<IActionResult> RegisterStudent(CreateStudentDto createDto)
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterStudent(RegisterDto registerDto)
     {
-       // await AuthService.Register(createDto);
+        await authService.Register(registerDto);
         return NoContent();
     }
 
-    //[HttpPost]
-    //preciso criar o login dto
-    //public async Task <IActionResult> LoginRequest(loginDto){
-      //  }
+    [HttpPost("login")]
+    public async Task<IActionResult> LoginRequest(LoginDto loginDto)
+    {
+        var token = await authService.Login(loginDto);
+        return Ok(token);
+    }
 }
