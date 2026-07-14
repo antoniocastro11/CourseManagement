@@ -1,4 +1,4 @@
-﻿namespace CourseManagementAPI.Data.Dtos;
+﻿namespace CourseManagementAPI.Data.Dtos.Enrollment;
 
 public class CreateEnrollmentDto
 { 
