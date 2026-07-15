@@ -14,4 +14,6 @@ public class Student
     [Required]
     public DateTime RegisterDate { get; set; }
     public virtual ICollection<Enrollment> Enrollments { get; set; }
+
+    public bool IsActive { get; set; }
 }
