@@ -1,7 +1,6 @@
-﻿using AutoMapper;
-using CourseManagementAPI.Data;
-using CourseManagementAPI.Data.Dtos.Enrollment;
+﻿using CourseManagementAPI.Data.Dtos.Enrollment;
 using CourseManagementAPI.Models;
+using CourseManagementAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,17 +8,30 @@ namespace CourseManagementAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EnrollmentController(CourseDbContext context, IMapper mapper) : ControllerBase
+public class EnrollmentController(EnrollmentService service) : ControllerBase
 {
     // TODO: cadastrar estudantes em um curso(com atutenticacao), getenrollmentbystudentId, cancelar matrícula(opicional), paginação e filtro por status
 
     [HttpPost]
     [Authorize]
-    public IActionResult CreateEnrollment([FromBody] CreateEnrollmentDto createDto)
+    public async Task<IActionResult> CreateEnrollment([FromBody] CreateEnrollmentDto createDto)
     {
-        Enrollment enrollment = mapper.Map<Enrollment>(createDto);
-        context.Enrollments.Add(enrollment);
-        context.SaveChanges();
-        return Ok(); //corrigir esse tipo de retorno
+        var canCreate = await service.CreateEnrollment(createDto);
+        
+        if (!canCreate) return BadRequest();
+
+        return Created();
+    }
+
+    [HttpGet("{id}")]
+    [Authorize(Roles = "Admin, Student")]
+    public async Task<IActionResult> GetEnrollmentById(Guid id)
+    {
+        var search = await service.GetEnrollmentAuxAsync(id);
+
+        if (search is null) return NotFound();
+        
+        return Ok(search);
+        
     }
 }

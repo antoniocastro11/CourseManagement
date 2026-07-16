@@ -1,36 +1,43 @@
 ﻿using AutoMapper;
 using CourseManagementAPI.Data;
+using CourseManagementAPI.Data.Dtos.Enrollment;
 using CourseManagementAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseManagementAPI.Services;
 
-public class EnrollmentService (IMapper mapper, CourseDbContext context)
+public class EnrollmentService(IMapper mapper, CourseDbContext context)
 {
-    public async Task<Enrollment> GetEnrollmentAuxAsync(Guid id)
+    public async Task<Enrollment?> GetEnrollmentAuxAsync(Guid id)
     {
         Enrollment? enrollment = await context.Enrollments.FindAsync(id);
+        
+        if (enrollment is null) return null;
+        
         return enrollment;
     }
 
-    public async Task<bool> IsCourseActive(Guid id)
+    public async Task<bool> CanCreateEnrollment(CreateEnrollmentDto dto)
     {
-        var result = await context.Courses.Where(c => c.IsActive == true).FirstOrDefaultAsync(c => c.CourseId == id);
-        
-        if (result is null)
+        if (await context.Students.AnyAsync(s => s.IsActive && s.UserId == dto.StudentId && s.Enrollments.Any(ent => ent.CourseId == dto.CourseId)) )
         {
             return false;
         }
-        return true;
+        return true; // preciso pensar sobre a regra de negócio: o estudante cria a própria matrícula ou ela deve ser criada por terceiros?
     }
 
-    public async Task<bool> IsStudentActive(Guid id)
+    public async Task<bool> CreateEnrollment(CreateEnrollmentDto dto)
     {
-        return await context.Students.AnyAsync(s => s.IsActive && s.UserId == id);
-    }
+        var canCreate = await CanCreateEnrollment(dto);
+        if(canCreate)
+        {
+            Enrollment enrollment = mapper.Map<Enrollment>(dto);
 
-    public async Task<bool> IsEnrollmentActive(Guid id)
-    {
-        return await context.Enrollments.AnyAsync(e => e.EnrollmentId == id && e.IsActive);
+            context.Enrollments.Add(enrollment);
+            
+            await context.SaveChangesAsync();
+            return true;
+        }
+        return false;
     }
 }
