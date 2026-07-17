@@ -1,6 +1,7 @@
 using AutoMapper;
 using CourseManagementAPI.Data;
 using CourseManagementAPI.Data.Dtos.Student;
+using CourseManagementAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,27 +9,25 @@ namespace CourseManagementAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class StudentController(CourseDbContext context, IMapper mapper) : ControllerBase
+public class StudentController(CourseDbContext context, IMapper mapper, StudentService service) : ControllerBase
 {
     // TODO: atualizar estudantes, softdelete
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public IEnumerable<ReadStudentDto> GetAllStudents([FromQuery] int take = 10, [FromQuery] int skip = 0)
+    public async Task<IEnumerable<ReadStudentDto>> GetAllStudents([FromQuery] int take = 10, [FromQuery] int skip = 0)
     {
-        return mapper.Map<List<ReadStudentDto>>(context.Students.Take(take).Skip(skip).ToList());
+        return await service.GetAllStudentsAsync(skip, take);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpGet("{id}")]
-    public IActionResult GetStudentById(Guid id)
+    public async Task<IActionResult> GetStudentById(Guid id)
     {
-        var student = context.Students.Find(id);
+        var student = await service.GetStudentByIdAsync(id);
 
         if (student is null) return NotFound();
-        
-        var dto = mapper.Map<ReadStudentDto>(student);
-        
-        return Ok(dto);
+
+        return Ok(student);
     }
 }
