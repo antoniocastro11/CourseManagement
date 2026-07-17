@@ -3,6 +3,7 @@ using CourseManagementAPI.Data;
 using CourseManagementAPI.Data.Dtos.Enrollment;
 using CourseManagementAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CourseManagementAPI.Services;
 
@@ -28,18 +29,34 @@ public class EnrollmentService(IMapper mapper, CourseDbContext context)
         return true; // preciso pensar sobre a regra de negócio: o estudante cria a própria matrícula ou ela deve ser criada por terceiros?
     }
 
-    public async Task<bool> CreateEnrollment(CreateEnrollmentDto dto)
+    public async Task<bool> CreateEnrollment(CreateEnrollmentDto dto, ClaimsPrincipal user)
     {
         var canCreate = await CanCreateEnrollment(dto);
-        if(canCreate)
-        {
-            Enrollment enrollment = mapper.Map<Enrollment>(dto);
+        if(!canCreate) return false;
 
-            context.Enrollments.Add(enrollment);
-            
-            await context.SaveChangesAsync();
-            return true;
+        Guid? studentId;
+
+        if (user.IsInRole("Student"))
+        {
+            studentId = Guid.Parse(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        } else if(user.IsInRole("Admin") || user.IsInRole("Instructor"))
+        {
+            studentId = dto.StudentId;
+
+            if (studentId is null) throw new ApplicationException("O Id de estudante é obrigatório");
         }
-        return false;
+
+        Enrollment enrollment = new Enrollment
+        {
+            StudentId = studentId,
+            CourseId = dto.CourseId
+        };
+
+        context.Enrollments.Add(enrollment);
+
+        await context.SaveChangesAsync();
+        return true;
+
     }
 }
