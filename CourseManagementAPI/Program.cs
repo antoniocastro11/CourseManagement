@@ -31,7 +31,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddIdentity<ApplicationUser, AccessRole>(opts => {
     opts.User.RequireUniqueEmail = true;
     opts.Password.RequiredLength = 8;
-    })
+})
+        .AddRoles<AccessRole>()
         .AddEntityFrameworkStores<CourseDbContext>()
         .AddDefaultTokenProviders();
 
