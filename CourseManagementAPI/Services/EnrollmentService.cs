@@ -8,13 +8,15 @@ namespace CourseManagementAPI.Services;
 
 public class EnrollmentService(IMapper mapper, CourseDbContext context)
 {
-    public async Task<Enrollment?> GetEnrollmentAuxAsync(Guid id)
+    public async Task<ReadEnrollmentDto?> GetEnrollmentAuxAsync(Guid id)
     {
         Enrollment? enrollment = await context.Enrollments.FindAsync(id);
         
         if (enrollment is null) return null;
+
+        ReadEnrollmentDto dto = mapper.Map<ReadEnrollmentDto>(enrollment);
         
-        return enrollment;
+        return dto;
     }
 
     public async Task<bool> CanCreateEnrollment(CreateEnrollmentDto dto)
