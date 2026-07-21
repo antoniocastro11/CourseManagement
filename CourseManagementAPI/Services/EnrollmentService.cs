@@ -34,7 +34,7 @@ public class EnrollmentService(IMapper mapper, CourseDbContext context)
         var canCreate = await CanCreateEnrollment(dto);
         if(!canCreate) return false;
 
-        Guid? studentId;
+        Guid studentId;
 
         if (user.IsInRole("Student"))
         {
@@ -42,9 +42,13 @@ public class EnrollmentService(IMapper mapper, CourseDbContext context)
 
         } else if(user.IsInRole("Admin") || user.IsInRole("Instructor"))
         {
-            studentId = dto.StudentId;
+            if (dto.StudentId is null) throw new ApplicationException("O Id de estudante é obrigatório");
 
-            if (studentId is null) throw new ApplicationException("O Id de estudante é obrigatório");
+            studentId = dto.StudentId.Value;
+
+        } else
+        {
+            throw new UnauthorizedAccessException();
         }
 
         Enrollment enrollment = new Enrollment

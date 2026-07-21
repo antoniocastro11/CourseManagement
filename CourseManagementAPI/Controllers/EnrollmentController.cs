@@ -13,10 +13,11 @@ public class EnrollmentController(EnrollmentService service) : ControllerBase
     // TODO: cadastrar estudantes em um curso(com atutenticacao), getenrollmentbystudentId, cancelar matrícula(opicional), paginação e filtro por status
 
     [HttpPost]
-    [Authorize]
+    [Authorize (Roles="Student, Admin, Instructor")]
     public async Task<IActionResult> CreateEnrollment([FromBody] CreateEnrollmentDto createDto)
     {
-        var canCreate = await service.CreateEnrollment(createDto);
+
+        var canCreate = await service.CreateEnrollment(createDto, User);
         
         if (!canCreate) return BadRequest();
 
