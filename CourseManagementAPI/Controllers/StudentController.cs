@@ -4,6 +4,7 @@ using CourseManagementAPI.Data.Dtos.Student;
 using CourseManagementAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CourseManagementAPI.Controllers;
 
@@ -28,6 +29,15 @@ public class StudentController(CourseDbContext context, IMapper mapper, StudentS
 
         if (student is null) return NotFound();
 
+        return Ok(student);
+    }
+
+    [Authorize(Roles = "Student")]
+    [HttpGet("me")]
+    public async Task<ActionResult<ReadStudentDto>> GetMe()
+    {
+        Guid studentId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        ReadStudentDto student = await service.GetStudentByIdAsync(studentId);
         return Ok(student);
     }
 }
