@@ -4,6 +4,7 @@ using CourseManagementAPI.Data.Dtos;
 using CourseManagementAPI.Data.Dtos.Course;
 using CourseManagementAPI.Models;
 using CourseManagementAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseManagementAPI.Controllers;
@@ -15,6 +16,7 @@ public class CourseController(CourseService service) : ControllerBase
     // TODO: atualizar (adm/instrutor), remover(adm)
     // pensar aqui como faz, pq tem q ser com patch (problema de pacote)
 
+    [Authorize(Roles ="Admin, Instructor")]
     [HttpPost]
     public async Task<IActionResult> CreateCourse([FromBody] CreateCourseDto createDto)
     {
