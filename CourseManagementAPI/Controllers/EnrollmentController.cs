@@ -2,13 +2,15 @@
 using CourseManagementAPI.Models;
 using CourseManagementAPI.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CourseManagementAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EnrollmentController(EnrollmentService service) : ControllerBase
+public class EnrollmentController(EnrollmentService service, StudentService studentService) : ControllerBase
 {
     // TODO: cadastrar estudantes em um curso(com atutenticacao), getenrollmentbystudentId, cancelar matrícula(opicional), paginação e filtro por status
 
@@ -34,5 +36,25 @@ public class EnrollmentController(EnrollmentService service) : ControllerBase
         
         return Ok(search);
         
+    }
+
+    [HttpGet("student/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetEnrollmentsByStudentId(Guid id)
+    {
+        var search = await studentService.GetStudentEnrollmentsAsync(id);
+
+        return Ok(search);
+    }
+
+    [HttpGet("me")]
+    [Authorize(Roles="Student")]
+    public async Task<IActionResult> GetStudentEnrollments()
+    {
+        Guid studentId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var search = await studentService.GetStudentEnrollmentsAsync(studentId);
+        
+        return Ok(search);
     }
 }
