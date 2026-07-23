@@ -10,6 +10,6 @@ public class CourseProfile : Profile
     public CourseProfile() {
         CreateMap<Course, ReadCourseDto>();
         CreateMap<CreateCourseDto, Course>();
-        CreateMap<UpdateCourseDto, Course>();
+        CreateMap<UpdateCourseDto, Course>().ForAllMembers(opts => opts.Condition((src,dest,srcMember) => srcMember != null));
     }
 }

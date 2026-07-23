@@ -35,4 +35,11 @@ public class CourseService (CourseDbContext context, IMapper mapper)
         }
         return  mapper.Map<List<ReadCourseDto>>(context.Courses.Where(c => c.Category == category).Skip(skip).Take(take).ToListAsync());
     }
+
+    public async Task UpdateCourse(Guid id, UpdateCourseDto dto)
+    {
+        var course = await context.Courses.FindAsync(id);
+        mapper.Map(dto, course);
+        await context.SaveChangesAsync();
+    }
 }

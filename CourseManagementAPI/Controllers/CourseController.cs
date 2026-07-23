@@ -41,4 +41,11 @@ public class CourseController(CourseService service) : ControllerBase
         
         return Ok(search);
     }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdateCourse(Guid id, UpdateCourseDto dto)
+    {
+        await service.UpdateCourse(id, dto);
+        return NoContent();
+    }
 }
