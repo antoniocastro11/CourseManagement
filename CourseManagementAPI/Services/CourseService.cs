@@ -39,7 +39,7 @@ public class CourseService (CourseDbContext context, IMapper mapper)
     public async Task UpdateCourse(Guid id, UpdateCourseDto dto)
     {
         var course = await context.Courses.FindAsync(id);
-        mapper.Map(dto, course);
+        mapper.Map(dto, course); // faço assim para preservar o objeto, se fizesse co, <>() estaria criando outro objeto
         await context.SaveChangesAsync();
     }
 }
