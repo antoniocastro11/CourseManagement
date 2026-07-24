@@ -4,6 +4,7 @@ using CourseManagementAPI.Data.Dtos.Enrollment;
 using CourseManagementAPI.Data.Dtos.Student;
 using CourseManagementAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CourseManagementAPI.Services;
 
@@ -29,5 +30,21 @@ public class StudentService(CourseDbContext context, IMapper mapper)
     {
         List<Enrollment> enrollments = await context.Enrollments.Where(e => e.StudentId == id).ToListAsync();
         return mapper.Map<List<ReadEnrollmentDto>>(enrollments);
+    }
+
+    public async Task UpdateProfileAsync(ClaimsPrincipal user, UpdateStudentDto dto)
+    {
+        var studentId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var student = context.Students.FindAsync(studentId);
+        mapper.Map(student, dto);
+        await context.SaveChangesAsync();
+
+    }
+
+    public async Task UpdateStudentAsync(Guid id, UpdateStudentDto dto)
+    {
+        var student = context.Students.FindAsync(id);
+        await mapper.Map(dto, student);
+        await context.SaveChangesAsync();
     }
 }

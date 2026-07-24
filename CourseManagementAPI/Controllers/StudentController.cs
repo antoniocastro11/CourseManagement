@@ -40,4 +40,20 @@ public class StudentController(CourseDbContext context, IMapper mapper, StudentS
         ReadStudentDto student = await service.GetStudentByIdAsync(studentId);
         return Ok(student);
     }
+
+    [Authorize(Roles = "Student")]
+    [HttpPatch("me")]
+    public async Task<IActionResult> UpdateProfileAsync(UpdateStudentDto dto)
+    {
+        await service.UpdateProfileAsync(User, dto);
+        return NoContent();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdateStudentAsync(Guid id, UpdateStudentDto dto)
+    {
+        await service.UpdateStudentAsync(id, dto);
+        return NoContent();
+    }
 }
