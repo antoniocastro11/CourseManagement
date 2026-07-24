@@ -13,9 +13,6 @@ namespace CourseManagementAPI.Controllers;
 [Route("[controller]")]
 public class CourseController(CourseService service) : ControllerBase
 {
-    // TODO: atualizar (adm/instrutor), remover(adm)
-    // pensar aqui como faz, pq tem q ser com patch (problema de pacote)
-
     [Authorize(Roles ="Admin, Instructor")]
     [HttpPost]
     public async Task<IActionResult> CreateCourse([FromBody] CreateCourseDto createDto)

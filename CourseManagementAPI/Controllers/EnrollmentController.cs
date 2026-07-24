@@ -12,7 +12,6 @@ namespace CourseManagementAPI.Controllers;
 [Route("[controller]")]
 public class EnrollmentController(EnrollmentService service, StudentService studentService) : ControllerBase
 {
-    // TODO: cadastrar estudantes em um curso(com atutenticacao), getenrollmentbystudentId, cancelar matrícula(opicional), paginação e filtro por status
 
     [HttpPost]
     [Authorize (Roles="Student, Admin, Instructor")]
