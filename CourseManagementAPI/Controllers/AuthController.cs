@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CourseManagementAPI.Controllers;
 
 [ApiController]
+[Route("[controller]")]
 public class AuthController(AuthService authService) : ControllerBase
 {
     [Authorize(Roles = "Admin")]
