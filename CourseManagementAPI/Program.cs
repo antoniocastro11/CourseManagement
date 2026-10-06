@@ -1,5 +1,7 @@
 using CourseManagementAPI.Data;
 using CourseManagementAPI.Models;
+using CourseManagementAPI.Services;
+using CourseManagementAPI.Profiles;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +42,19 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<ApplicationUserProfile>();
+    cfg.AddProfile<CourseProfile>();
+    cfg.AddProfile<StudentProfile>();
+    cfg.AddProfile<EnrollmentProfile>();
+});
+
+// Dependency Injection
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<StudentService>();
+builder.Services.AddScoped<EnrollmentService>();
 
 var app = builder.Build();
 
