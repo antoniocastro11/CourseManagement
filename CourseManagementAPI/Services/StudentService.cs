@@ -23,7 +23,9 @@ public class StudentService(CourseDbContext context, IMapper mapper)
 
     public async Task<List<ReadStudentDto>> GetAllStudentsAsync(int take = 10, int skip = 0)
     {
-        return mapper.Map<List<ReadStudentDto>>(context.Students.Skip(skip).Take(take).ToListAsync());
+        var students = await context.Students.Skip(skip).Take(take).ToListAsync();
+
+        return mapper.Map<List<ReadStudentDto>>(students);
     }
 
     public async Task<List<ReadEnrollmentDto>> GetStudentEnrollmentsAsync(Guid id)
@@ -35,8 +37,8 @@ public class StudentService(CourseDbContext context, IMapper mapper)
     public async Task UpdateProfileAsync(ClaimsPrincipal user, UpdateStudentDto dto)
     {
         var studentId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var student = context.Students.FindAsync(studentId);
-        mapper.Map(student, dto);
+        var student = await context.Students.FindAsync(studentId);
+        mapper.Map(dto, student);
         await context.SaveChangesAsync();
 
     }

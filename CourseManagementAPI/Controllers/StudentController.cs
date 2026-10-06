@@ -18,7 +18,7 @@ public class StudentController(CourseDbContext context, IMapper mapper, StudentS
     [HttpGet]
     public async Task<IEnumerable<ReadStudentDto>> GetAllStudents([FromQuery] int take = 10, [FromQuery] int skip = 0)
     {
-        return await service.GetAllStudentsAsync(skip, take);
+        return await service.GetAllStudentsAsync(take, skip);
     }
 
     [Authorize(Roles = "Admin")]
