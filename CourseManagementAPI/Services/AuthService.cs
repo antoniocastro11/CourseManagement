@@ -8,8 +8,10 @@ using System.Security.Claims;
 using System.Text;
 
 namespace CourseManagementAPI.Services;
-public class AuthService (UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager)
+public class AuthService (UserManager<ApplicationUser> userManager, IMapper mapper, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
 {
+    private readonly string jwtKey = configuration["Jwt:Key"];
+
     public async Task<string> GenerateToken(ApplicationUser user)
     {
         var roles = await signInManager.UserManager.GetRolesAsync(user);
@@ -23,10 +25,10 @@ public class AuthService (UserManager<ApplicationUser> userManager, IMapper mapp
 
         foreach (var role in roles)
         {
-            claims.Add(new(ClaimTypes.Role, role));
+            claims.Add(new(ClaimTypes.Role, role)); // adiciona os cargos
         }
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("")); //TODO: ver secret
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         
         var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         
