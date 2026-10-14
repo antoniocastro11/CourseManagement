@@ -37,7 +37,7 @@ public class StudentService(CourseDbContext context, IMapper mapper)
     public async Task UpdateProfileAsync(ClaimsPrincipal user, UpdateStudentDto dto)
     {
         var studentId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var student = await context.Students.FindAsync(studentId);
+        var student = await context.Students.FindAsync(studentId) ?? throw new KeyNotFoundException();
         mapper.Map(dto, student);
         await context.SaveChangesAsync();
 
@@ -45,8 +45,8 @@ public class StudentService(CourseDbContext context, IMapper mapper)
 
     public async Task UpdateStudentAsync(Guid id, UpdateStudentDto dto)
     {
-        var student = context.Students.FindAsync(id);
-        await mapper.Map(dto, student);
+        var student = await context.Students.FindAsync(id) ?? throw new KeyNotFoundException();
+        mapper.Map(dto, student);
         await context.SaveChangesAsync();
     }
 }
