@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using CourseManagementAPI.Models;
 
-namespace CourseManagementAPI.Model;
+namespace CourseManagementAPI.Models;
 
 public class Instructor
 {
