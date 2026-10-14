@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="CourseManagementAPI.IntegrationTests/CourseManagementAPI.IntegrationTests.csproj" />
+  <Project Path="CourseManagementAPI.UnitTests/CourseManagementAPI.UnitTests.csproj" />
   <Project Path="CourseManagementAPI/CourseManagementAPI.csproj" />
 </Solution>
