@@ -10,6 +10,10 @@ public class CourseProfile : Profile
     public CourseProfile() {
         CreateMap<Course, ReadCourseDto>();
         CreateMap<CreateCourseDto, Course>();
-        CreateMap<UpdateCourseDto, Course>().ForAllMembers(opts => opts.Condition((src,dest,srcMember) => srcMember != null));
-    }
+CreateMap<UpdateCourseDto, Course>()
+    .ForMember(d => d.Title,       o => o.Condition(s => s.Title != null))
+    .ForMember(d => d.Description, o => o.Condition(s => s.Description != null))
+    .ForMember(d => d.Category,    o => o.Condition(s => s.Category != null))
+    .ForMember(d => d.WorkLoad,    o => o.Condition(s => s.WorkLoad.HasValue))
+    .ForMember(d => d.IsActive,    o => o.Condition(s => s.IsActive.HasValue));    }
 }
