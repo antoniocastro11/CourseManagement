@@ -56,6 +56,10 @@ builder.Services.AddScoped<CourseService>();
 builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<EnrollmentService>();
 
+builder.Services.AddExceptionHandler<CourseManagementAPI.Exceptions.Handlers.EnrollmentExceptionHandler>();
+builder.Services.AddExceptionHandler<CourseManagementAPI.Exceptions.Handlers.GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 using(var scope = app.Services.CreateScope()){
@@ -75,6 +79,7 @@ using(var scope = app.Services.CreateScope()){
 }
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
