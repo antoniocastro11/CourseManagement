@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using CourseManagementAPI.Model;
 using CourseManagementAPI.Models;
 using CourseManagementAPI.Data.Seed;
 namespace CourseManagementAPI.Data;
