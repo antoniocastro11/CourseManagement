@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CourseManagementAPI.Data;
 using CourseManagementAPI.Data.Dtos.Enrollment;
+using CourseManagementAPI.Exceptions;
 using CourseManagementAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -20,50 +21,34 @@ public class EnrollmentService(IMapper mapper, CourseDbContext context)
         return dto;
     }
 
-    public async Task<bool> CanCreateEnrollment(CreateEnrollmentDto dto)
+    public async Task<ReadEnrollmentDto> CreateEnrollment(CreateEnrollmentDto dto, ClaimsPrincipal user)
     {
-        if (await context.Students.AnyAsync(s => s.IsActive && s.UserId == dto.StudentId && s.Enrollments.Any(ent => ent.CourseId == dto.CourseId)) )
-        {
-            return false;
-        }
+        Guid studentId = ResolveStudentId(dto, user);
+        await ValidateEnrollmentAsync(studentId, dto.CourseId);
 
-        if (await context.Enrollments.AnyAsync(e => e.StudentId == dto.StudentId && e.CourseId == dto.CourseId)) return false;
+        var enrollment = new Enrollment { StudentId = studentId, CourseId = dto.CourseId };
+        context.Enrollments.Add(enrollment);
+        await context.SaveChangesAsync();
 
-        return true;
+        return mapper.Map<ReadEnrollmentDto>(enrollment);
     }
 
-    public async Task<bool> CreateEnrollment(CreateEnrollmentDto dto, ClaimsPrincipal user)
+    private static Guid ResolveStudentId(CreateEnrollmentDto dto, ClaimsPrincipal user)
     {
-        var canCreate = await CanCreateEnrollment(dto);
-        if(!canCreate) return false;
-
-        Guid studentId;
-
         if (user.IsInRole("Student"))
-        {
-            studentId = Guid.Parse(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            return Guid.Parse(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        if (user.IsInRole("Admin") || user.IsInRole("Instructor"))
+            return dto.StudentId ?? throw new EnrollmentException("O Id de estudante é obrigatório");
+        throw new UnauthorizedAccessException();
+    }
 
-        } else if(user.IsInRole("Admin") || user.IsInRole("Instructor"))
-        {
-            if (dto.StudentId is null) throw new ApplicationException("O Id de estudante é obrigatório");
+    private async Task ValidateEnrollmentAsync(Guid studentId, Guid courseId)
+    {
+        var student = await context.Students.FirstOrDefaultAsync(s => s.UserId == studentId);
+        if (student is null || !student.IsActive)
+            throw new EnrollmentException("Estudante inexistente ou inativo.");
 
-            studentId = dto.StudentId.Value;
-
-        } else
-        {
-            throw new UnauthorizedAccessException();
-        }
-
-        Enrollment enrollment = new Enrollment
-        {
-            StudentId = studentId,
-            CourseId = dto.CourseId
-        };
-
-        context.Enrollments.Add(enrollment);
-
-        await context.SaveChangesAsync();
-        return true;
-
+        if (await context.Enrollments.AnyAsync(e => e.StudentId == studentId && e.CourseId == courseId))
+            throw new EnrollmentException("Estudante já matriculado neste curso.");
     }
 }

@@ -17,12 +17,9 @@ public class EnrollmentController(EnrollmentService service, StudentService stud
     [Authorize (Roles="Student, Admin, Instructor")]
     public async Task<IActionResult> CreateEnrollment([FromBody] CreateEnrollmentDto createDto)
     {
+        var enrollment = await service.CreateEnrollment(createDto, User);
 
-        var canCreate = await service.CreateEnrollment(createDto, User);
-        
-        if (!canCreate) return BadRequest();
-
-        return Created();
+        return Created(string.Empty, enrollment);
     }
 
     [HttpGet("{id}")]
