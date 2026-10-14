@@ -26,7 +26,10 @@ public class EnrollmentService(IMapper mapper, CourseDbContext context)
         {
             return false;
         }
-        return true; // preciso pensar sobre a regra de negócio: o estudante cria a própria matrícula ou ela deve ser criada por terceiros?
+
+        if (await context.Enrollments.AnyAsync(e => e.StudentId == dto.StudentId && e.CourseId == dto.CourseId)) return false;
+
+        return true;
     }
 
     public async Task<bool> CreateEnrollment(CreateEnrollmentDto dto, ClaimsPrincipal user)
